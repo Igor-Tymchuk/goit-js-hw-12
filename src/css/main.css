@@ -1,4 +1,5 @@
 .searchImg {
+  padding-top: 24px;
 }
 .searchText {
   font-family: inherit;
@@ -24,10 +25,9 @@
 }
 .btn {
   font-family: inherit;
-  margin-top: 36px;
-  margin-bottom: 32px;
   border-radius: 8px;
-  width: 91px;
+  padding: 8px 16px;
+  min-width: 91px;
   height: 40px;
   background-color: #4e75ff;
   transition: background-color 300ms ease;
@@ -48,8 +48,10 @@
   justify-content: center;
   display: flex;
   flex-wrap: wrap;
+  max-width: 1200px;
   gap: 24px;
-  margin-bottom: 36px;
+  padding-top: 24px;
+  padding-bottom: 24px;
 }
 .card {
   position: relative;
@@ -61,6 +63,7 @@
   overflow: hidden;
   transition: border 300ms ease;
 }
+
 .card:hover .informations {
   background-color: #ffffff;
 }
@@ -107,4 +110,11 @@ border: 1px solid black;
   line-height: 2;
   letter-spacing: 0.04em;
   color: #2e2f42;
+}
+.show-more {
+  margin-bottom: 24px;
+}
+
+.hidden {
+  display: none;
 }

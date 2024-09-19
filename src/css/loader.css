@@ -1,12 +1,13 @@
 .loader {
-    top: 30px;
     display: flex;
     position: relative;
-    height: 8px;
-    width: 99.5%;
-  border: 1px solid #808080;
+    height: 14px;
+    border: 1px solid #808080;
     border-radius: 10px;
     overflow: hidden;
+    width: 350px;
+    margin-top: 15px;
+    margin-bottom: 35px;
   }
   .loader::after {
     content: '';
