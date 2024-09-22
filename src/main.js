@@ -11,6 +11,7 @@ const showMoreBtn = document.querySelector('.show-more');
 const perPage = 15;
 let pageCount;
 let imagesShown;
+let currentItemCounter;
 
 const iziWarning = () => iziToast.show({
     message: "Input is empty!",
@@ -52,7 +53,8 @@ const lightbox = new SimpleLightbox('.gallery a', {
 
 const loader = () => document.querySelector("span").classList.toggle("loader");
 let searchText = '';
-const handleForm = (event) => {
+
+const handleForm = async (event) => {
     event.preventDefault();
     pageCount = 1;
     imagesShown = perPage;
@@ -61,39 +63,51 @@ const handleForm = (event) => {
     if (!searchText) return iziWarning();
     gallery.innerHTML = "";
     loader();
-    backEndData(searchText, perPage, pageCount)
-        .then(data => {
-            if (!data.hits.length) return iziError();
-            gallery.insertAdjacentHTML("beforeend", markupCard(data.hits).join(""));
-            lightbox.refresh();
-            if (data.totalHits >= imagesShown) showMoreBtn.classList.remove("hidden");
-        })
-        .catch(e => console.log(e))
-        .finally(() => loader());
-    form.reset();
-}
+    try {
+        const takenData = await backEndData(searchText, perPage, pageCount)
+        if (!takenData.hits.length) return iziError();
+        gallery.insertAdjacentHTML("beforeend", markupCard(takenData.hits).join(""));
+        lightbox.refresh();
+        if (takenData.totalHits >= imagesShown) showMoreBtn.classList.remove("hidden");
+    }
+    catch (e) { console.log(e); }
+    finally {
+        loader()
+        form.reset();
+    }
+};
 
-const showMoreImages = () => {
+
+const showMoreImages = async () => {
+    currentItemCounter = gallery.childElementCount;
     pageCount++;
     imagesShown = perPage * pageCount;
     loader();
     showMoreBtn.classList.add("hidden");
-    backEndData(searchText, perPage, pageCount).then(data => {
-        gallery.insertAdjacentHTML("beforeend", markupCard(data.hits).join(""));
+    try {
+        const updateData = await backEndData(searchText, perPage, pageCount)
+        gallery.insertAdjacentHTML("beforeend", markupCard(updateData.hits).join(""));
         lightbox.refresh();
         scrollToNewImages();
-        if (data.totalHits > imagesShown) showMoreBtn.classList.remove("hidden");
+        if (updateData.totalHits > imagesShown) showMoreBtn.classList.remove("hidden");
         else iziInfo();
-    })
-        .catch(e => console.log(e))
-        .finally(() => loader());
-}
+    }
+    catch (e) { console.log(e) }
+    finally { loader() }
+};
 const scrollToNewImages = () => {
-    const galleryItemHeight = gallery.querySelector('.card').getBoundingClientRect().height;
-    window.scrollBy({
-        top: galleryItemHeight * 2,
-        behavior: 'smooth'
-    });}
+    // const galleryItemHeight = gallery.querySelector('.card').getBoundingClientRect().height;
+    // window.scrollBy({
+    //     top: currentItemCounter,
+    //     // top: galleryItemHeight * 2,
+    //     behavior: 'smooth'
+    // });
+    const firstNewItem = gallery.children[currentItemCounter];
+    firstNewItem.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+    });
+}
 
-    form.addEventListener('submit', handleForm);
-    showMoreBtn.addEventListener('click', showMoreImages);
+form.addEventListener('submit', handleForm);
+showMoreBtn.addEventListener('click', showMoreImages);
